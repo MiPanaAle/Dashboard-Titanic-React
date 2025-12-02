@@ -64,7 +64,7 @@
   }
 }
 
-/* Animación de hundimiento */
+/* Animación de hundimiento
 @keyframes sink {
   from {
     bottom: 20vh;
@@ -72,16 +72,16 @@
     opacity: 1;
   }
   to {
-    bottom: -140px; /* se hunde hacia abajo */
+    bottom: -140px; 
     transform: rotate(25deg);
     opacity: 0;
   }
 }
 
-/* Aplicamos la animación cuando el barco se hunde */
+Aplicamos la animación cuando el barco se hunde 
 .ship-sinking {
   animation: sink 4s ease-in forwards;
-}
+} */
 
 .survived {
   border-color: #09f09f;

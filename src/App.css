@@ -162,3 +162,82 @@ header {
   align-items: center;
 }
 
+/* Estilos para el barco partido */
+.barco-partido {
+  animation: split 2s ease-in forwards;
+}
+
+@keyframes split {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.barco-mitad-izq {
+  position: absolute !important;
+  animation: split-left 3s ease-in forwards;
+  z-index: 3;
+}
+
+.barco-mitad-der {
+  position: absolute !important;
+  animation: split-right 3s ease-in forwards;
+  z-index: 3;
+}
+
+@keyframes split-left {
+  0% {
+    transform: rotate(0deg) translateX(0);
+    bottom: 20vh;
+  }
+  30% {
+    transform: rotate(-15deg) translateX(-10px);
+    bottom: 20vh;
+  }
+  70% {
+    transform: rotate(-45deg) translateX(-50px);
+    bottom: 10vh;
+  }
+  100% {
+    transform: rotate(-90deg) translateX(-100px);
+    bottom: -50px;
+    opacity: 0;
+  }
+}
+
+@keyframes split-right {
+  0% {
+    transform: rotate(0deg) translateX(0);
+    bottom: 20vh;
+  }
+  30% {
+    transform: rotate(15deg) translateX(10px);
+    bottom: 20vh;
+  }
+  70% {
+    transform: rotate(45deg) translateX(50px);
+    bottom: 10vh;
+  }
+  100% {
+    transform: rotate(90deg) translateX(100px);
+    bottom: -50px;
+    opacity: 0;
+  }
+}
+
+.contenedorBarco.roto {
+  gap: 100px !important;
+  transition: gap 2s ease-in;
+}
+
+.btnControl {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+}

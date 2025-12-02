@@ -17,9 +17,11 @@ function Barco({ estado, setEstado }) {
   const [posX, setPosX] = useState(0); // posición mientras navega
   const [colision, setColision] = useState(null); // posición donde choca
 
-  // Refs DOM
+  // Refs a los elemntos del DOM
   const shipRef = useRef(null);
-  const icebergRef = useRef(document.querySelector('.iceberg'));
+  const icebergRef = useRef(document.querySelector(".iceberg"));
+  const izqRef = useRef(null);
+  const derRef = useRef(null);
 
   // Cargar datos del CSV desde public
   const parseCSVLine = (line) => {
@@ -50,7 +52,7 @@ function Barco({ estado, setEstado }) {
 
         // CORRECCIÓN: Añade la ruta del archivo CSV
         // El archivo debe estar en la carpeta 'public'
-        const response = await fetch("/data/titanic.csv"); // ← Ruta relativa desde public
+        const response = await fetch("/titanic.csv"); // ← Ruta relativa desde public
 
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
@@ -108,7 +110,7 @@ function Barco({ estado, setEstado }) {
     const intervalo = setInterval(() => {
       setPosX((prevPos) => {
         const nuevaPos = prevPos - velocidad;
-        
+
         // Detectar colisión cuando llegue cerca del iceberg (posición 100px)
         if (nuevaPos <= 100) {
           console.log("¡COLISIÓN DETECTADA!");
@@ -117,7 +119,7 @@ function Barco({ estado, setEstado }) {
           clearInterval(intervalo);
           return 100; // Posición de colisión
         }
-        
+
         return nuevaPos;
       });
     }, 30);
@@ -128,7 +130,7 @@ function Barco({ estado, setEstado }) {
   // Resetear cuando el estado vuelve a "parado"
   useEffect(() => {
     if (estado === "parado") {
-      setPosX(600); // Volver a la posición inicial derecha
+      setPosX(900); // Volver a la posición inicial derecha
       setColision(false);
     }
   }, [estado]);
@@ -193,20 +195,53 @@ function Barco({ estado, setEstado }) {
     return <div className="pasajeros">Cargando datos...</div>;
   }
   return (
-    <div
-      ref={shipRef}
-      className={`contenedorBarco ${estado}`}
-      style={{ 
-        left: `${posX}px`,
-        transition: estado === "navegando" ? "none" : "left 0.3s ease"
-      }}
-    >
-      <div className={`izq ${estado === "hundido" ? "ship-sinking-left" : ""}`}>
-        <img src={titanicIzq} alt="Titanic Izquierda" />
+    <div>
+      <div
+        ref={shipRef}
+        className={`contenedorBarco ${estado}`}
+        style={{
+          right: `${posX}px`,
+          transition: estado === "navegando" ? "none" : "left 0.5s ease",
+        }}
+      >
+        <div
+          className={`izq ${estado === "hundido" ? "ship-sinking-left" : ""}`}
+        >
+          <img src={titanicIzq} alt="Titanic" />
+        </div>
+        <div
+          className={`der ${
+            estado === "chocando" || estado === "hundido" ? "ship-sinking" : ""
+          }`}
+        >
+          <img src={titanicDer} alt="Titanic" />
+        </div>
       </div>
-      <div className={`der ${estado === "chocando" || estado === "hundido" ? "ship-sinking-? ship-sinking-right" : ""}`}>
-        <img src={titanicDer} alt="Titanic Derecha" />
-      </div>
+      {barcoPartido && (
+        <>
+          <div 
+            ref={izqRef}
+            className="barco-mitad-izq"
+            style={{
+              right: '300px',
+              bottom: '20vh'
+            }}
+          >
+            <img src={titanicIzq} alt="Mitad izquierda del Titanic partida" />
+          </div>
+          <div 
+            ref={derRef}
+            className="barco-mitad-der"
+            style={{
+              right: `calc(300px - ${titanicIzq ? '100px' : '0px'})`,
+              bottom: '20vh'
+            }}
+          >
+            <img src={titanicDer} alt="Mitad derecha del Titanic partida" />
+          </div>
+        </>
+      )}
+
       <div className="contenedorPasajeros">
         {pasajerosFiltrados
           .filter((pasajero) => pasajero.Survived === "0")
