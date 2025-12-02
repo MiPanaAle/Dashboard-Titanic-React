@@ -21,4 +21,5 @@
   box-shadow: none;
   border: none;
   transform: scale(0.98);
+  cursor: pointer;
 }

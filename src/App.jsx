@@ -5,7 +5,9 @@ import Barco from "./components/barco/Barco";
 
 import "./App.css";
 
-function App() {  // No puede recibir nada, ya que es el padre de todos
+// No puede recibir nada, ya que es el padre de todos
+function App() {
+  // Estado de los filtros
   const [selectedBtn, setSelectedBtn] = useState({
     pC: false,
     pS: false,
@@ -18,6 +20,9 @@ function App() {  // No puede recibir nada, ya que es el padre de todos
   });
   const [edadMax, setEdadMax] = useState(70);
   const [edadMin, setEdadMin] = useState(0);
+
+  // Estado del barco
+  const [estado, setEstado] = useState("parado"); // "parado" | "navegando" | "chocando" | "partido"
 
   const toggleFilters = (key) => {
     console.log("Filtrando por:", key);
@@ -46,6 +51,16 @@ function App() {  // No puede recibir nada, ya que es el padre de todos
     if (value > edadMin) {
       setEdadMax(value);
     }
+  };
+
+  const iniciarAnimacion = () => {
+    console.log("Iniciando animación");
+    setEstado("navegando");
+  };
+
+  const resetearAnimacion = () => {
+    console.log("Reseteando animación");
+    setEstado("parado");
   };
 
   return (
@@ -155,16 +170,25 @@ function App() {  // No puede recibir nada, ya que es el padre de todos
                 />
               </div>
               <div className="valores-rango">
-                <p>{edadMin} - {edadMax}</p>
+                <p>
+                  {edadMin} - {edadMax}
+                </p>
               </div>
             </div>
           </div>
         </div>
-        <Boton className="botonInicio">INICIAR ANIMACIÓN</Boton>
+        <div className="btnControl">
+          <Boton className="botonInicio" onClick={iniciarAnimacion}>
+            INICIAR ANIMACIÓN
+          </Boton>
+          <Boton className="botonReset" onClick={resetearAnimacion}>
+            RESETEAR ANIMACIÓN
+          </Boton>
+        </div>
       </header>
       <main>
         <Iceberg />
-        <Barco />
+        <Barco estado={estado} setEstado={setEstado} />
       </main>
     </>
   );

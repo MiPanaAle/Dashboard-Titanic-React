@@ -3,7 +3,7 @@ import titanicIzq from "../../img/titanic-izq.png";
 import titanicDer from "../../img/titanic-der.png";
 import "./Barco.css";
 
-function Barco() {
+function Barco({ estado, setEstado }) {
   const [sexo, setSexo] = useState("Todos");
   const [clase, setClase] = useState("Todas");
   const [puerto, setPuerto] = useState("Todos");
@@ -11,20 +11,37 @@ function Barco() {
   const [edadMin, setEdadMin] = useState(0);
   const [datosPasajeros, setDatosPasajeros] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState('')
+  const [error, setError] = useState("");
 
   // Estados del barco
-  const [estado, setEstado] = useState("parado"); // "parado" | "navegando" | "chocando" | "partido"
   const [posX, setPosX] = useState(0); // posición mientras navega
-  const [posColision, setPosColision] = useState(null); // posición donde choca
-
-  const xActual = estado === "navegando" ? posX : posColision ?? posX;
+  const [colision, setColision] = useState(null); // posición donde choca
 
   // Refs DOM
   const shipRef = useRef(null);
-  const icebergRef = useRef(null);
+  const icebergRef = useRef(document.querySelector('.iceberg'));
 
-  // Cargar datos del CSV desde public/
+  // Cargar datos del CSV desde public
+  const parseCSVLine = (line) => {
+    const result = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        result.push(current.trim());
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
 
   useEffect(() => {
     const cargarCSV = async () => {
@@ -33,7 +50,7 @@ function Barco() {
 
         // CORRECCIÓN: Añade la ruta del archivo CSV
         // El archivo debe estar en la carpeta 'public'
-        const response = await fetch("/titanic.csv"); // ← Ruta relativa desde public
+        const response = await fetch("/data/titanic.csv"); // ← Ruta relativa desde public
 
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
@@ -55,7 +72,6 @@ function Barco() {
           .slice(1)
           .map((line, index) => {
             try {
-              // Manejo mejorado de CSV con comillas y comas dentro de campos
               const values = parseCSVLine(line);
               const pasajero = {};
 
@@ -65,8 +81,7 @@ function Barco() {
 
               return pasajero;
             } catch (error) {
-            //   console.warn(`Error parseando línea ${index + 2}:`, line);
-            //   return null;
+              console.log(`${error} no hay pasajeros`);
             }
           })
           .filter((p) => p !== null && p.PassengerId);
@@ -84,58 +99,59 @@ function Barco() {
 
     cargarCSV();
   }, []);
-  useEffect(() => {
-    if (estado !== "navegando") return;
 
-    const velocidad = 4; // px por tick
+  // Efecto para el movimiento hacia la izquierda
+  useEffect(() => {
+    if (estado !== "navegando" || colision) return;
+
+    const velocidad = 3; // Velocidad hacia la izquierda (negativo)
     const intervalo = setInterval(() => {
-      setPosX((x) => x + velocidad);
+      setPosX((prevPos) => {
+        const nuevaPos = prevPos - velocidad;
+        
+        // Detectar colisión cuando llegue cerca del iceberg (posición 100px)
+        if (nuevaPos <= 100) {
+          console.log("¡COLISIÓN DETECTADA!");
+          setColision(true);
+          setEstado("chocando");
+          clearInterval(intervalo);
+          return 100; // Posición de colisión
+        }
+        
+        return nuevaPos;
+      });
     }, 30);
-    console.log(
-      setPosX((x) => x + velocidad),
-      velocidad
-    );
-    console.log("navegando");
+
     return () => clearInterval(intervalo);
+  }, [estado, colision, setEstado]);
+
+  // Resetear cuando el estado vuelve a "parado"
+  useEffect(() => {
+    if (estado === "parado") {
+      setPosX(600); // Volver a la posición inicial derecha
+      setColision(false);
+    }
   }, [estado]);
 
+  // Efecto para el hundimiento
   useEffect(() => {
-    if (estado !== "navegando") return;
-
-    const shipEl = shipRef.current;
-    const icebergEl = icebergRef.current;
-    if (!shipEl || !icebergEl) return;
-
-    const shipRect = shipEl.getBoundingClientRect();
-    const icebergRect = icebergEl.getBoundingClientRect();
-    console.log("iceberg.left", icebergRect.left, shipRect.right);
-    if (shipRect.right >= icebergRect.left) {
-      const solape = shipRect.right - icebergRect.left;
-      const xAjustado = posX - solape;
-      // console.log("recalculando posicion;",posX, shipRect.right, solape, icebergRect.left);
-      setPosColision(xAjustado);
-      setEstado("chocando");
+    if (estado === "chocando") {
+      const timer = setTimeout(() => {
+        setEstado("hundido");
+      }, 3000); // 3 segundos para hundirse completamente
+      return () => clearTimeout(timer);
     }
-  }, [posX, estado]); // <--- SIEMPRE EXACTAMENTE ESTO
-
-  // Botones
-  const isSailing = () => {
-    console.log("zarpar", estado);
-    setPosX();
-    setPosColision(null);
-    setEstado("navegando");
-  };
-
+  }, [estado, setEstado]);
   // Función para actualizar filtros desde otros componentes
   const actualizarFiltros = (nuevosFiltros) => {
     console.log("Actualizando filtros:", nuevosFiltros);
 
     if (nuevosFiltros.clase !== undefined) {
-      setClase(clase.clase === "Todas" ? "Todas" : nuevosFiltros.clase);
+      setClase(nuevosFiltros.clase === "Todas" ? "Todas" : nuevosFiltros.clase);
     }
 
     if (nuevosFiltros.genero !== undefined) {
-      setSexo(sexo.se === "todos" ? "Todos" : nuevosFiltros.genero);
+      setSexo(nuevosFiltros.sexo === "todos" ? "Todos" : nuevosFiltros.genero);
     }
 
     if (nuevosFiltros.puerto !== undefined) {
@@ -177,23 +193,30 @@ function Barco() {
     return <div className="pasajeros">Cargando datos...</div>;
   }
   return (
-    <div className={`contenedorBarco ${isSailing === false ? '' : 'sailing'}`}>
-      <div className="izq">
-        <img src={titanicIzq} alt="Titaic Izquierada" />
+    <div
+      ref={shipRef}
+      className={`contenedorBarco ${estado}`}
+      style={{ 
+        left: `${posX}px`,
+        transition: estado === "navegando" ? "none" : "left 0.3s ease"
+      }}
+    >
+      <div className={`izq ${estado === "hundido" ? "ship-sinking-left" : ""}`}>
+        <img src={titanicIzq} alt="Titanic Izquierda" />
       </div>
-      <div className="der">
-        <img src={titanicDer} alt="Titaic Derecha" />
+      <div className={`der ${estado === "chocando" || estado === "hundido" ? "ship-sinking-? ship-sinking-right" : ""}`}>
+        <img src={titanicDer} alt="Titanic Derecha" />
       </div>
       <div className="contenedorPasajeros">
         {pasajerosFiltrados
-          .filter((pasajero) => pasajero.Survived === 0)
+          .filter((pasajero) => pasajero.Survived === "0")
           .map((pasajero) => (
             <div
               key={pasajero.PassengerId}
               className="pasajeros"
               title={`${pasajero.Name}`}
             ></div>
-          ))}   
+          ))}
       </div>
     </div>
   );
