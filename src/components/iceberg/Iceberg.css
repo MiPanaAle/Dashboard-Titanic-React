@@ -1,0 +1,9 @@
+.iceberg {
+  position: absolute;
+  width: 35%;
+  height: auto;
+  right: 0;
+  bottom: 0;
+  transform: rotate(180deg);
+  z-index: -1;
+}

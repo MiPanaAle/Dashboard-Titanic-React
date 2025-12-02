@@ -1,35 +1,173 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Boton from "./components/boton/Boton";
+import Iceberg from "./components/iceberg/Iceberg";
+import Barco from "./components/barco/Barco";
 
-function App() {
-  const [count, setCount] = useState(0)
+import "./App.css";
+
+function App() {  // No puede recibir nada, ya que es el padre de todos
+  const [selectedBtn, setSelectedBtn] = useState({
+    pC: false,
+    pS: false,
+    pQ: false,
+    male: false,
+    female: false,
+    class1: false,
+    class2: false,
+    class3: false,
+  });
+  const [edadMax, setEdadMax] = useState(70);
+  const [edadMin, setEdadMin] = useState(0);
+
+  const toggleFilters = (key) => {
+    console.log("Filtrando por:", key);
+
+    // Actualizar estado visual del botón - CORREGIDO
+    setSelectedBtn((prevState) => ({
+      ...prevState,
+      [key]: !prevState[key],
+    }));
+
+    // Llamar a la función de filtrado del padre
+  };
+  console.log(selectedBtn);
+
+  // Maneja el cambio del rango mínimo
+  const toggleEdadMin = (e) => {
+    const value = Math.min(Number(e.target.value), edadMax);
+    if (value < edadMax) {
+      setEdadMin(value);
+    }
+  };
+
+  // Maneja el cambio del rango máximo
+  const toggleEdadMax = (e) => {
+    const value = Math.max(Number(e.target.value), edadMin);
+    if (value > edadMin) {
+      setEdadMax(value);
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <img
+        src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F3.bp.blogspot.com%2F-u-RY6P9CJd8%2FVcU08l44HiI%2FAAAAAAAAAME%2F-GFUEn-CrCA%2Fs1600%2FLuna%252Bmaxresdefault.jpg&f=1&nofb=1&ipt=4b819d492783b7ac56e9d0fc81e41a1b2b2e244bc549de4b0145e770ae1ebd1d"
+        alt="fondo dashboard"
+        className="fondo"
+      />
+      <header>
+        <div className="all-filters">
+          <div className="filters">
+            <div className="filter-group clase">
+              <h2>CLASE</h2>
+              <div className="contenedorBotones">
+                <Boton
+                  onClick={() => {
+                    toggleFilters("class1");
+                  }}
+                >
+                  PRIMERA
+                </Boton>
+                <Boton
+                  onClick={() => {
+                    toggleFilters("class2");
+                  }}
+                >
+                  SEGUNDA
+                </Boton>
+                <Boton
+                  onClick={() => {
+                    toggleFilters("class3");
+                  }}
+                >
+                  TERCERA
+                </Boton>
+              </div>
+            </div>
+
+            <div className="filter-group sexo">
+              <h2>SEXO</h2>
+              <div className="contenedorBotones">
+                <Boton
+                  onClick={() => {
+                    toggleFilters("female");
+                  }}
+                >
+                  FEMENINO
+                </Boton>
+                <Boton
+                  onClick={() => {
+                    toggleFilters("male");
+                  }}
+                >
+                  MASCULINO
+                </Boton>
+              </div>
+            </div>
+
+            <div className="filter-group puerto">
+              <h2>PUERTO</h2>
+              <div className="contenedorBotones">
+                <Boton
+                  onClick={() => {
+                    toggleFilters("pC");
+                  }}
+                >
+                  CHERBURGO
+                </Boton>
+                <Boton
+                  onClick={() => {
+                    toggleFilters("pQ");
+                  }}
+                >
+                  QUEENSTOWN
+                </Boton>
+                <Boton
+                  onClick={() => {
+                    toggleFilters("pS");
+                  }}
+                >
+                  SOUTHAMPTON
+                </Boton>
+              </div>
+            </div>
+          </div>
+
+          <div className="filter edad">
+            <h2>EDAD</h2>
+            <div className="contenedorRangoEdad">
+              <div className="rango-contenedor">
+                <input
+                  type="range"
+                  min="0"
+                  max="70"
+                  onChange={toggleEdadMin}
+                  value={edadMin || 0}
+                  className="rango-min"
+                />
+                <input
+                  type="range"
+                  onChange={toggleEdadMax}
+                  min="0"
+                  max="70"
+                  value={edadMax || 70}
+                  className="rango-max"
+                />
+              </div>
+              <div className="valores-rango">
+                <p>{edadMin} - {edadMax}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Boton className="botonInicio">INICIAR ANIMACIÓN</Boton>
+      </header>
+      <main>
+        <Iceberg />
+        <Barco />
+      </main>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

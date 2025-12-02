@@ -1,0 +1,88 @@
+.contenedorBarco {
+  display: flex;
+  flex-direction: row;
+  width: 50vw;
+  height: auto;
+  gap: 0;
+  position: absolute;
+  z-index: 2;
+  bottom: 20vh;
+}
+
+.titacic1 {
+  background-color: cyan;
+  width: 25vw;
+  height: 200px;
+  position: absolute;
+  left: 15px;
+  z-index: 2;
+}
+
+.titanic2 {
+  background-color: #09f09f;
+  width: 25vw;
+  height: 200px;
+  position: absolute;
+  left: 400px;
+  z-index: 2;
+}
+
+.contenedorPasajeros {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap-reverse;
+  width: 48.5vw;
+  bottom: 30vh;
+  left: 15px;
+  z-index: 3;
+  gap: 3;
+  height: auto;
+  justify-content: center;
+  align-items: end;
+}
+
+.pasajeros {
+  height: 7.5px;
+  width: 7.5px;
+  border-radius: 5px;
+  background-color: darkgray;
+  margin: 2.5px;
+}
+
+.ship-sailing {
+  animation: sail 5s linear forwards;
+}
+
+@keyframes sail {
+  from {
+    left: 15px;
+    /* bottom: 35px; */
+  }
+  to {
+    left: 600px;
+    /* bottom: 35px; */
+  }
+}
+
+/* Animación de hundimiento */
+@keyframes sink {
+  from {
+    bottom: 20vh;
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    bottom: -140px; /* se hunde hacia abajo */
+    transform: rotate(25deg);
+    opacity: 0;
+  }
+}
+
+/* Aplicamos la animación cuando el barco se hunde */
+.ship-sinking {
+  animation: sink 4s ease-in forwards;
+}
+
+.survived {
+  border-color: #09f09f;
+}
