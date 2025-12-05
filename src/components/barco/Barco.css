@@ -1,17 +1,16 @@
 .contenedorBarco {
   display: flex;
   flex-direction: row;
-  width: 50vw;
   height: auto;
   gap: 0;
   position: absolute;
-  z-index: 2;
+  z-index: -1;
   bottom: 20vh;
+  left: 15px;
 }
 
 .titacic1 {
   background-color: cyan;
-  width: 25vw;
   height: 200px;
   position: absolute;
   left: 15px;
@@ -20,7 +19,6 @@
 
 .titanic2 {
   background-color: #09f09f;
-  width: 25vw;
   height: 200px;
   position: absolute;
   left: 400px;
@@ -47,6 +45,7 @@
   border-radius: 5px;
   background-color: darkgray;
   margin: 2.5px;
+  z-index: 0;
 }
 
 .ship-sailing {

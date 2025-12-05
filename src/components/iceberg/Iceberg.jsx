@@ -1,10 +1,10 @@
-import React from 'react';
-import iceberg from '../../img/iceberg.png'
-import './Iceberg.css';
+import React from "react";
+import iceberg from "../../img/iceberg.png";
+import "./Iceberg.css";
 
-function Iceberg() {
+function Iceberg({ containerRef }) {
   return (
-    <div className='contenedorIceberg'>
+    <div className='contenedorIceberg' ref={containerRef}>
       <img 
         src={iceberg}
         className="iceberg" 

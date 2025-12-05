@@ -5,9 +5,20 @@
   font-family: Candara, sans-serif;
 }
 
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 .App {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 .fondo {
@@ -17,14 +28,6 @@
   width: 100%;
   height: 100vh;
   z-index: -2;
-}
-
-html,
-body {
-  width: 100vw;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
 }
 
 main {
@@ -52,7 +55,7 @@ h2 {
 
 
 header {
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba(0, 0, 0, 0.75);
   z-index: 1;
   color: white;
   display: flex;

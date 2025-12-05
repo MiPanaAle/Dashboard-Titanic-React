@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Boton from "./components/boton/Boton";
 import Iceberg from "./components/iceberg/Iceberg";
 import Barco from "./components/barco/Barco";
@@ -24,6 +24,9 @@ function App() {
   // Estado del barco
   const [estado, setEstado] = useState("parado"); // "parado" | "navegando" | "chocando" | "partido"
 
+  // Referencias de elememtos del DOM
+  const icebergRef = useRef(null);
+
   const toggleFilters = (key) => {
     console.log("Filtrando por:", key);
 
@@ -35,6 +38,7 @@ function App() {
 
     // Llamar a la función de filtrado del padre
   };
+
   console.log(selectedBtn);
 
   // Maneja el cambio del rango mínimo
@@ -62,6 +66,10 @@ function App() {
     console.log("Reseteando animación");
     setEstado("parado");
   };
+
+  const ship = document.getElementById("contenedorBarco");
+  const shipRef = ship.getBoundingClientRect();
+  console.log("posicion barco: " + shipRef.right);
 
   return (
     <>
@@ -187,8 +195,8 @@ function App() {
         </div>
       </header>
       <main>
-        <Iceberg />
-        <Barco estado={estado} setEstado={setEstado} />
+        <Iceberg containerRef={icebergRef} />
+        <Barco estado={estado} setEstado={setEstado} icebergRef={icebergRef} />
       </main>
     </>
   );
