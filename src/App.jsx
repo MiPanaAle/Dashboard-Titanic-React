@@ -1,7 +1,11 @@
-import React, { useState, useRef } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState, useRef, useEffect } from "react";
 import Boton from "./components/boton/Boton";
 import Iceberg from "./components/iceberg/Iceberg";
 import Barco from "./components/barco/Barco";
+
+import titanicIzq from "./img/titanic-izq.png";
+import titanicDer from "./img/titanic-der.png";
 
 import "./App.css";
 
@@ -26,6 +30,7 @@ function App() {
 
   // Referencias de elememtos del DOM
   const icebergRef = useRef(null);
+  const shipRef = useRef(null);
 
   const toggleFilters = (key) => {
     console.log("Filtrando por:", key);
@@ -35,11 +40,7 @@ function App() {
       ...prevState,
       [key]: !prevState[key],
     }));
-
-    // Llamar a la función de filtrado del padre
   };
-
-  console.log(selectedBtn);
 
   // Maneja el cambio del rango mínimo
   const toggleEdadMin = (e) => {
@@ -67,18 +68,26 @@ function App() {
     setEstado("parado");
   };
 
-  const ship = document.getElementById("contenedorBarco");
-  const shipRef = ship.getBoundingClientRect();
-  console.log("posicion barco: " + shipRef.right);
+  useEffect(() => {
+    if (estado !== "navegardo") return;
+
+    const shipEl = shipRef.current;
+    const icebergEl = icebergRef.current;
+    if (!icebergEl || !shipEl) return;
+    console.log("funciona!!!");
+
+    return () => {};
+  }, [estado]);
 
   return (
     <>
       <img
         src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F3.bp.blogspot.com%2F-u-RY6P9CJd8%2FVcU08l44HiI%2FAAAAAAAAAME%2F-GFUEn-CrCA%2Fs1600%2FLuna%252Bmaxresdefault.jpg&f=1&nofb=1&ipt=4b819d492783b7ac56e9d0fc81e41a1b2b2e244bc549de4b0145e770ae1ebd1d"
-        alt="fondo dashboard"
+        alt="fondo"
         className="fondo"
       />
       <header>
+        <h1>DASHBOARD TITANIC</h1>
         <div className="all-filters">
           <div className="filters">
             <div className="filter-group clase">
@@ -196,7 +205,7 @@ function App() {
       </header>
       <main>
         <Iceberg containerRef={icebergRef} />
-        <Barco estado={estado} setEstado={setEstado} icebergRef={icebergRef} />
+        <Barco estado={estado} setEstado={setEstado} shipRef={shipRef} icebergRef={icebergRef} /> 
       </main>
     </>
   );

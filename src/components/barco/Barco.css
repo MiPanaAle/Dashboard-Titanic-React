@@ -63,7 +63,7 @@
   }
 }
 
-/* Animación de hundimiento
+/* Animación de hundimiento */
 @keyframes sink {
   from {
     bottom: 20vh;
@@ -80,8 +80,31 @@
 Aplicamos la animación cuando el barco se hunde 
 .ship-sinking {
   animation: sink 4s ease-in forwards;
-} */
+} 
 
 .survived {
   border-color: #09f09f;
+}
+
+@keyframes sink{
+  0% {
+    transform: transtranslateY(40%) rotate(0deg);
+    opacity: 1;
+  } 
+  33% {
+    transform: translateY(60%) rotate(11.25deg);
+    opacity: 0.66;
+  } 
+  66% {
+    transform: transtranslateY(80%) rotate(22.5deg);
+    opacity: 0.33;
+  } 
+  100% {
+    transform: translateY(100%) rotate(45deg);
+    opacity: 0;
+  } 
+}
+
+.ship-sinking{
+  animation: sink 10s ease-in-out;
 }

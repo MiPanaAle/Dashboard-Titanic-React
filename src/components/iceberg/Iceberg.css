@@ -2,8 +2,8 @@
   position: fixed;
   right: 0; 
   bottom: 0;
-    width: 35vh;
-  height: auto;
+  width: 35vh;
+  height: 100vh;
   z-index: -1;
 }
 
