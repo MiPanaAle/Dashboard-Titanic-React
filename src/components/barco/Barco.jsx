@@ -18,47 +18,25 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
   const [posX, setPosX] = useState(15); // Posición inicial en la derecha
   const [colision, setColision] = useState(0); // posición donde choca
   const [barcoPartido, setBarcoPartido] = useState(false);
-  const [animacionCompleta, F] = useState(false);
+  const [animacionCompleta, setAnimacionCompleta] = useState(false);
 
   // Refs a los elemntos del DOM
   const izqRef = useRef(null);
   const derRef = useRef(null);
 
-  // Cargar datos del CSV desde public
-  const parseCSVLine = (line) => {
-    const result = [];
-    let current = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === "," && !inQuotes) {
-        result.push(current.trim());
-        current = "";
-      } else {
-        current += char;
-      }
-    }
-    result.push(current.trim());
-    return result;
-  };
-
-  // Carga CSV
-  useEffect(() => {
+  // Cargar datos del CSV desde /public
+ useEffect(() => {
     const cargarCSV = async () => {
       try {
-        // CORRECCIÓN: Añade la ruta del archivo CSV
-        // El archivo debe estar en la carpeta 'public'
-        const response = await fetch("./titanic.csv"); 
+        console.log("Cargando CSV...");
+        const response = await fetch("/titanicdata.csv");
 
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
         }
 
         const csvText = await response.text();
+        console.log("CSV cargado, procesando...");
 
         // Parsear el CSV
         const lines = csvText.split("\n").filter((line) => line.trim() !== "");
@@ -73,7 +51,10 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
           .slice(1)
           .map((line, index) => {
             try {
-              const values = parseCSVLine(line);
+              // Manejo simple de CSV - asumiendo que no hay comas en los campos
+              const values = line
+                .split(",")
+                .map((val) => val.trim().replace(/^"|"$/g, ""));
               const pasajero = {};
 
               headers.forEach((header, i) => {
@@ -82,7 +63,8 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
 
               return pasajero;
             } catch (error) {
-              console.log(`${error} no hay pasajeros`);
+              console.warn(`Error parseando línea ${index + 2}:`, line);
+              return null;
             }
           })
           .filter((p) => p !== null && p.PassengerId);
@@ -90,10 +72,8 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
         console.log(`Datos cargados: ${datos.length} pasajeros`);
         setDatosPasajeros(datos);
         setCargando(false);
-        setError(null);
       } catch (error) {
         console.error("Error cargando CSV:", error);
-        setError(error.message);
         setCargando(false);
       }
     };
@@ -256,9 +236,11 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
 
   // Filtrando pasajeros
   const pasajerosFiltrados = useMemo(() => {
+    console.log('filtrando');
     if (!datosPasajeros.length || cargando) return [];
 
     const filtrados = datosPasajeros.filter((pasajero) => {
+      console.log('filtrando2');
       const coincideSexo = sexo === "Todos" ? true : pasajero.Sex === sexo;
       const coincideClase =
         clase === "Todas" ? true : pasajero.Pclass === clase;
@@ -275,7 +257,7 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
   }, [sexo, clase, puerto, edadMax, edadMin, datosPasajeros, cargando]);
 
   return (
-    <div>
+    <div className="">
       <div
         ref={shipRef}
         className="contenedorBarco"

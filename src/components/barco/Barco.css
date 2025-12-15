@@ -1,3 +1,11 @@
+.contenedor{
+  width: 950px;
+  height: 230px;
+  display: flex;
+  align-items: end;
+  
+}
+
 .contenedorBarco {
   display: flex;
   flex-direction: row;
@@ -29,7 +37,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap-reverse;
-  width: 48.5vw;
+  width: 100%;
   bottom: 30vh;
   left: 15px;
   z-index: 3;
@@ -40,8 +48,8 @@
 }
 
 .pasajeros {
-  height: 7.5px;
-  width: 7.5px;
+  height: 5px;
+  width: 5px;
   border-radius: 5px;
   background-color: darkgray;
   margin: 2.5px;
@@ -52,36 +60,7 @@
   animation: sail 5s linear forwards;
 }
 
-@keyframes sail {
-  from {
-    left: 15px;
-    /* bottom: 35px; */
-  }
-  to {
-    left: 600px;
-    /* bottom: 35px; */
-  }
-}
-
-/* Animación de hundimiento */
-@keyframes sink {
-  from {
-    bottom: 20vh;
-    transform: rotate(0deg);
-    opacity: 1;
-  }
-  to {
-    bottom: -140px; 
-    transform: rotate(25deg);
-    opacity: 0;
-  }
-}
-
-Aplicamos la animación cuando el barco se hunde 
-.ship-sinking {
-  animation: sink 4s ease-in forwards;
-} 
-
+/* Aplicamos la animación cuando el barco se hunde */
 .survived {
   border-color: #09f09f;
 }
