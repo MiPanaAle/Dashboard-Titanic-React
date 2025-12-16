@@ -33,6 +33,10 @@ body {
 main {
   display: flex;
   flex-direction: column;
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  height: 44vh;
 }
 
 h1 {
@@ -52,7 +56,6 @@ h2 {
   margin-bottom: 0;
   text-align: center;
 }
-
 
 header {
   background-color: rgba(0, 0, 0, 0.75);
@@ -153,7 +156,6 @@ header {
 
 .selectedBtn {
   background-color: black;
-  
 }
 
 header {

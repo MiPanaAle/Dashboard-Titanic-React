@@ -4,13 +4,10 @@ import Boton from "./components/boton/Boton";
 import Iceberg from "./components/iceberg/Iceberg";
 import Barco from "./components/barco/Barco";
 
-import titanicIzq from "./img/titanic-izq.png";
-import titanicDer from "./img/titanic-der.png";
-
 import "./App.css";
 
 // No puede recibir nada, ya que es el padre de todos
-function App() {
+function App({pasajerosFiltrados}) {
   // Estado de los filtros
   const [selectedBtn, setSelectedBtn] = useState({
     pC: false,
@@ -33,7 +30,6 @@ function App() {
   const shipRef = useRef(null);
 
   const toggleFilters = (key) => {
-    console.log("Filtrando por:", key);
 
     // Actualizar estado visual del botón - CORREGIDO
     setSelectedBtn((prevState) => ({
@@ -59,22 +55,20 @@ function App() {
   };
 
   const iniciarAnimacion = () => {
-    console.log("Iniciando animación");
     setEstado("navegando");
+
   };
 
   const resetearAnimacion = () => {
-    console.log("Reseteando animación");
     setEstado("parado");
   };
 
   useEffect(() => {
-    if (estado !== "navegardo") return;
+    if (estado !== "navegando") return;
 
     const shipEl = shipRef.current;
     const icebergEl = icebergRef.current;
     if (!icebergEl || !shipEl) return;
-    console.log("funciona!!!");
 
     return () => {};
   }, [estado]);

@@ -2,14 +2,16 @@
   position: fixed;
   right: 0; 
   bottom: 0;
-  width: 35vh;
+  width: 35vw;
   height: 100vh;
   z-index: -1;
 }
 
 .iceberg {
   position: absolute;
-
+  width: 40vw;
+  max-height: 130vh;
+  height: auto;
   right: 0;
   bottom: 0;
   transform: rotate(180deg);
