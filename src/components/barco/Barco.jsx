@@ -4,12 +4,15 @@ import titanicIzq from "../../img/titanic-izq.png";
 import titanicDer from "../../img/titanic-der.png";
 import "./Barco.css";
 
-function Barco({ estado, setEstado, icebergRef, shipRef }) {
-  const [sexo, setSexo] = useState("Todos");
-  const [clase, setClase] = useState("Todas");
-  const [puerto, setPuerto] = useState("Todos");
-  const [edadMax, setEdadMax] = useState(70);
-  const [edadMin, setEdadMin] = useState(0);
+function Barco({
+  estado,
+  setEstado,
+  icebergRef,
+  shipRef,
+  filtros,
+  edadMin,
+  edadMax,
+}) {
   const [datosPasajeros, setDatosPasajeros] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -23,10 +26,6 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
   const izqRef = useRef(null);
   const derRef = useRef(null);
 
-  // Estados de pasajeros par-impar
-  const [idPar, setIdPar] = useState([]);
-  const [idImpar, setidImpar] = useState([]);
-
   // Cargar datos del CSV desde /public
   useEffect(() => {
     const cargarCSV = async () => {
@@ -38,25 +37,22 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
         }
 
         const csvText = await response.text();
-        console.log(csvText);
 
         // Parsear el CSV
-        const lines = csvText.split("\n").filter((line) => line.trim() !== "");
+        const lines = csvText.split("\n").filter((line) => line);
 
         if (lines.length === 0) {
           throw new Error("El archivo CSV está vacío");
         }
 
-        const headers = lines[0].split(",").map((header) => header.trim());
+        const headers = lines[0].split(",").map((header) => header);
 
         const datos = lines
           .slice(1)
           .map((line, index) => {
             try {
               // Manejo simple de CSV - asumiendo que no hay comas en los campos
-              const values = line
-                .split(",")
-                .map((val) => val.trim().replace(/^"|"$/g, ""));
+              const values = line.split(",").map((val) => val.trim());
               const pasajero = {};
 
               headers.forEach((header, i) => {
@@ -65,6 +61,7 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
 
               return pasajero;
             } catch (error) {
+              console.error(`Error procesando línea ${index + 1}:`, error);
               return null;
             }
           })
@@ -75,15 +72,6 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
       } catch (error) {
         setCargando(false);
       }
-      const processCSV = (csvText) => {
-        const lines = csvText.split("\n");
-        const headers = lines[0].split(",");
-
-        const idPar = [];
-        const idImpar = [];
-
-        //for(let i= 1; i < lines.length; i++){}
-      };
     };
 
     cargarCSV();
@@ -207,40 +195,29 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
     return () => clearInterval(intervalo);
   }, [animacionCompleta, colision, estado, icebergRef, setEstado, shipRef]);
 
-  const actualizarFiltros = (nuevosFiltros) => {
-    if (nuevosFiltros.clase !== undefined) {
-      setClase(clase.clase === "Todas" ? "Todas" : nuevosFiltros.clase);
-    }
-
-    if (nuevosFiltros.genero !== undefined) {
-      setSexo(sexo.se === "todos" ? "Todos" : nuevosFiltros.genero);
-    }
-
-    if (nuevosFiltros.puerto !== undefined) {
-      const puertoMap = {
-        pC: "C",
-        pQ: "Q",
-        pS: "S",
-        todos: "Todos",
-      };
-      setPuerto(puertoMap[nuevosFiltros.puerto] || nuevosFiltros.puerto);
-    }
-
-    if (nuevosFiltros.edadMin !== undefined) setEdadMin(nuevosFiltros.edadMin);
-    if (nuevosFiltros.edadMax !== undefined) setEdadMax(nuevosFiltros.edadMax);
-  };
-
   // Filtrando pasajeros
   const pasajerosFiltrados = useMemo(() => {
     if (!datosPasajeros.length || cargando) return [];
 
     const filtrados = datosPasajeros.filter((pasajero) => {
-      const coincideSexo = sexo === "Todos" ? true : pasajero.Sex === sexo;
-      const coincideClase =
-        clase === "Todas" ? true : pasajero.Pclass === clase;
-      const coincidePuerto =
-        puerto === "Todos" ? true : pasajero.Embarked === puerto;
+      // Usa filtros.male y filtros.female
+      const coincideSexo =
+        (pasajero.Sex === "male" && filtros.male) ||
+        (pasajero.Sex === "female" && filtros.female);
 
+      // Usa filtros.class1, class2, class3
+      const coincideClase =
+        (pasajero.Pclass === "1" && filtros.class1) ||
+        (pasajero.Pclass === "2" && filtros.class2) ||
+        (pasajero.Pclass === "3" && filtros.class3);
+
+      // Usa filtros.pC, pQ, pS
+      const coincidePuerto =
+        (pasajero.Embarked === "C" && filtros.pC) ||
+        (pasajero.Embarked === "Q" && filtros.pQ) ||
+        (pasajero.Embarked === "S" && filtros.pS);
+
+      // Filtro por edad
       const edad = parseFloat(pasajero.Age) || 0;
       const coincideEdad = edad <= edadMax && edad >= edadMin;
 
@@ -248,7 +225,7 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
     });
 
     return filtrados;
-  }, [sexo, clase, puerto, edadMax, edadMin, datosPasajeros, cargando]);
+  }, [filtros, edadMax, edadMin, datosPasajeros, cargando]);
 
   return (
     <div
@@ -263,45 +240,43 @@ function Barco({ estado, setEstado, icebergRef, shipRef }) {
       <div className="izq">
         <img src={titanicIzq} alt="Titanic" className="titanic" />
 
-        {/* PASAJEROS IZQUIERDA */}
+        {/* PASAJEROS VIVOS */}
         <div className="contenedorPasajeros">
           {pasajerosFiltrados
-            .filter((pasajero, index) => index % 2 === 0) // Pares van a la izquierda
+            .filter(
+              (pasajero) => pasajero.Survived === "1" || pasajero.Survived === 1
+            )
             .map((pasajero) => (
               <div
                 key={pasajero.PassengerId}
                 className={`pasajeros ${
                   pasajero.Survived === "1" ? "vivo" : "muerto"
                 }`}
-                title={`${pasajero.Name} - ${
-                  pasajero.Survived === "1" ? "Sobrevivió" : "Murió"
-                }`}
+                title={`${pasajero.Name}\n
+                Edad: ${pasajero.Age || "Desconocida"}\n
+                Clase: ${pasajero.Pclass}`}
               ></div>
             ))}
         </div>
       </div>
 
       {/* MITAD DERECHA */}
-      <div className={`izq ${estado === "chocando" ? "ship-sinking" : ""}`}>
-        <img
-          src={titanicDer}
-          alt="Titanic"
-          className={`titanic`}
-        />
+      <div className={`der ${estado === "chocando" ? "ship-sinking" : ""}`}>
+        <img src={titanicDer} alt="Titanic" className={`titanic`} />
 
-        {/* PASAJEROS DERECHA */}
+        {/* PASAJEROS MUERTOS */}
         <div className="contenedorPasajeros">
           {pasajerosFiltrados
-            .filter((pasajero, index) => index % 2 === 1) // Impares van a la derecha
+            .filter(
+              (pasajero) => pasajero.Survived === "0" || pasajero.Survived === 0
+            )
             .map((pasajero) => (
               <div
                 key={pasajero.PassengerId}
-                className={`pasajeros ${
-                  pasajero.Survived === "1" ? "vivo" : "muerto"
-                }`}
-                title={`${pasajero.Name} - ${
-                  pasajero.Survived === "1" ? "Sobrevivió" : "Murió"
-                }`}
+                className={`pasajeros ${pasajero.Survived === "1" ? "vivo" : "muerto"}`}
+                title={`${pasajero.Name} \n
+                Edad: ${pasajero.Age || "Desconocida"} \n
+                Clase: ${pasajero.Pclass}`}
               ></div>
             ))}
         </div>

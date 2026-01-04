@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from "react";
 import Boton from "./components/boton/Boton";
 import Iceberg from "./components/iceberg/Iceberg";
@@ -7,17 +6,17 @@ import Barco from "./components/barco/Barco";
 import "./App.css";
 
 // No puede recibir nada, ya que es el padre de todos
-function App({pasajerosFiltrados}) {
+function App() {
   // Estado de los filtros
   const [selectedBtn, setSelectedBtn] = useState({
-    pC: false,
-    pS: false,
-    pQ: false,
-    male: false,
-    female: false,
-    class1: false,
-    class2: false,
-    class3: false,
+    pC: true,
+    pS: true,
+    pQ: true,
+    male: true,
+    female: true,
+    class1: true,
+    class2: true,
+    class3: true,
   });
   const [edadMax, setEdadMax] = useState(70);
   const [edadMin, setEdadMin] = useState(0);
@@ -30,7 +29,6 @@ function App({pasajerosFiltrados}) {
   const shipRef = useRef(null);
 
   const toggleFilters = (key) => {
-
     // Actualizar estado visual del botón - CORREGIDO
     setSelectedBtn((prevState) => ({
       ...prevState,
@@ -56,7 +54,6 @@ function App({pasajerosFiltrados}) {
 
   const iniciarAnimacion = () => {
     setEstado("navegando");
-
   };
 
   const resetearAnimacion = () => {
@@ -199,7 +196,15 @@ function App({pasajerosFiltrados}) {
       </header>
       <main>
         <Iceberg containerRef={icebergRef} />
-        <Barco estado={estado} setEstado={setEstado} shipRef={shipRef} icebergRef={icebergRef} /> 
+        <Barco
+          estado={estado}
+          setEstado={setEstado}
+          shipRef={shipRef}
+          icebergRef={icebergRef}
+          filtros={selectedBtn} 
+          edadMin={edadMin}
+          edadMax={edadMax}
+        />
       </main>
     </>
   );
