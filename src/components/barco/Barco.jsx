@@ -252,9 +252,7 @@ function Barco({
                 className={`pasajeros ${
                   pasajero.Survived === "1" ? "vivo" : "muerto"
                 }`}
-                title={`${pasajero.Name}\n
-                Edad: ${pasajero.Age || "Desconocida"}\n
-                Clase: ${pasajero.Pclass}`}
+                title={`${pasajero.Name}\nEdad: ${pasajero.Age || "Desconocida"}\nClase: ${pasajero.Pclass}`}
               ></div>
             ))}
         </div>
@@ -274,9 +272,7 @@ function Barco({
               <div
                 key={pasajero.PassengerId}
                 className={`pasajeros ${pasajero.Survived === "1" ? "vivo" : "muerto"}`}
-                title={`${pasajero.Name} \n
-                Edad: ${pasajero.Age || "Desconocida"} \n
-                Clase: ${pasajero.Pclass}`}
+                title={`${pasajero.Name}\nEdad: ${pasajero.Age || "Desconocida"}\nClase: ${pasajero.Pclass}`}
               ></div>
             ))}
         </div>
